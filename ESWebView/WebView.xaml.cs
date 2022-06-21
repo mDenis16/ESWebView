@@ -27,9 +27,24 @@ namespace ESWebView
         public WebView()
         {
             app = new WinWebViewApp();
-            if (!app.Startup())
+            var StartupResult = app.Startup();
+
+            if (StartupResult == ESWebViewInternal.StartupResult.CLOSE_APPLICATION)
+            {
                 Environment.Exit(0);
-            
+                return;
+            }
+            if (StartupResult == ESWebViewInternal.StartupResult.OPEN_CONFIG_WINDOW)
+            {
+                configWindow = new ConfigurationWindow(app);
+              
+                Application.Current.MainWindow = configWindow;
+                configWindow.Show();
+
+                this.Close();
+            }
+           
+
             InitializeComponent();
         }
         private async void Window_Loaded(object sender, RoutedEventArgs e)

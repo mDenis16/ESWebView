@@ -2,9 +2,16 @@
 
 namespace ESWebViewInternal
 {
+    public enum StartupResult
+    {
+        OPEN_CONFIG_WINDOW,
+        CLOSE_APPLICATION,
+        OPEN_NORMAL
+    }
+
     public interface InternalApp
     {
-        public bool Startup();
+        public StartupResult Startup();
 
         public void Shutdown();
       

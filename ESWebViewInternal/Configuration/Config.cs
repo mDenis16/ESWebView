@@ -83,7 +83,7 @@ namespace ESWebViewInternal.Configuration
             XDocument doc = new XDocument(settings);
 
             foreach (var prop in XmlClassProprieties)
-                settings.Add(new XElement(prop.Name, string.Empty));
+                settings.Add(new XElement(prop.Name, "Default"));
         
             doc.Save(_ConfigPath);
         }

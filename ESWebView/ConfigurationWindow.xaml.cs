@@ -23,15 +23,11 @@ namespace ESWebView
     {
         public WinWebViewApp app { get; set; }
 
-        public ConfigurationWindow()
+        public ConfigurationWindow(WinWebViewApp _app)
         {
-            app = new WinWebViewApp();
-            if (!app.Startup())
-                Environment.Exit(0);
+            app = _app;
 
             InitializeComponent();
-
-
         }
         private void ConfigurationWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -108,6 +104,17 @@ namespace ESWebView
             }
 
             app.Config.SaveConfig(configDict);
+            ReinitializeWebView();
+        }
+
+        private void ReinitializeWebView()
+        {
+            var WebView = new WebView();
+
+            Application.Current.MainWindow = WebView;
+            WebView.Show();
+
+            this.Close();
         }
     }
 }
