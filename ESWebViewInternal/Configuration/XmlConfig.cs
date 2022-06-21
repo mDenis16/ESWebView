@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ESWebViewInternal.Configuration
 {
-    internal class XmlConfig
+    public class XmlConfig
     {
-        public string AppName { get; set; }
         public string baseURL { get; set; }
     }
 }

@@ -4,21 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace ESWebViewInternal.Configuration
 {
-    internal class Config
+    public class Config
     {
-        internal string _ConfigPath { get; set; }
-
-        public Config(string ConfigPath)
+        private string _ConfigPath { get; set; }
+        
+        public Config(DataDirectory _directory, string ConfigFileName)
         {
-            _ConfigPath = ConfigPath;
+            _ConfigPath = _directory.Path + "//" +  ConfigFileName;
+            data = new XmlConfig();
         }
 
         public XmlConfig data { get; set; }
 
-        internal enum ConfigVerifyResult
+        public enum ConfigVerifyResult
         {
             VALID_CONFIGURATION,
             CREATED_CONFIGURATION,
@@ -67,27 +69,22 @@ namespace ESWebViewInternal.Configuration
                 if (propNode is null) return new Tuple<bool, string>(false, $"Config item {prop.Name} is null!");
 
                 if (propNode.InnerText.Length == 0) return new Tuple<bool, string>(false, $"Config item {prop.Name} is empty!");
+
+                prop.SetValue(data, propNode.InnerText);
             }
 
             return new Tuple<bool, string>(true, "Configuration file is valid.");
         }
 
-        public void CreateDefaultConfiguration()
+        private void CreateDefaultConfiguration()
         {
-            XmlDocument doc = new XmlDocument();
+            var XmlClassProprieties = typeof(XmlConfig).GetProperties();
+            var settings = new XElement("Settings");
+            XDocument doc = new XDocument(settings);
 
-
-            XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
-            XmlElement root = doc.DocumentElement;
-            doc.InsertBefore(xmlDeclaration, root);
-
-            XmlElement Settings = doc.CreateElement(string.Empty, "Settings", string.Empty);
-            doc.AppendChild(Settings);
-            {
-                doc.CreateElement(string.Empty, "AppName", string.Empty).AppendChild(Settings);
-                doc.CreateElement(string.Empty, "baseURL", string.Empty).AppendChild(Settings);
-            }
-
+            foreach (var prop in XmlClassProprieties)
+                settings.Add(new XElement(prop.Name, string.Empty));
+        
             doc.Save(_ConfigPath);
         }
     }
