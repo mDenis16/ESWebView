@@ -1,4 +1,5 @@
-﻿using ESWebViewWin;
+﻿using ESWebViewInternal.Configuration;
+using ESWebViewWin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace ESWebView
             // <TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"><TextBox Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="238"/></TextBlock>
             if (GridConfig is not null)
             {
-                var props = app.Config.ReadConfigDict();
+                var props = typeof(ConfigData).GetProperties();
 
 
                 var leftCollumn = new ColumnDefinition();
@@ -57,12 +58,12 @@ namespace ESWebView
 
 
                     var TextBlock = new TextBlock();
-                    TextBlock.Text = prop.Key;
+                    TextBlock.Text = prop.Name;
                     TextBlock.SetValue(Grid.RowProperty, GridConfig.RowDefinitions.Count - 1);
                     TextBlock.SetValue(Grid.ColumnProperty, 0);
 
                     var TextBox = new TextBox();
-                    TextBox.Text = prop.Value;
+                    TextBox.Text = (string)prop.GetValue(app.Config.data);
                     TextBox.SetValue(Grid.RowProperty, GridConfig.RowDefinitions.Count - 1);
                     TextBox.SetValue(Grid.ColumnProperty, 1);
 
@@ -90,6 +91,7 @@ namespace ESWebView
         {
             IDictionary<string, string> configDict = new Dictionary<string, string>();
 
+            var classProps = typeof(ConfigData).GetProperties();
             for (int i = 0; i < GridConfig.Children.Count; i += 2)
             {
                 TextBlock? textblock = GridConfig.Children[i] as TextBlock;
@@ -100,16 +102,17 @@ namespace ESWebView
                 if (textbox is null)
                     continue;
 
-                configDict[textblock.Text] = textbox.Text;
+                var prop = classProps.Where(x => x.Name == textblock.Text).FirstOrDefault();
+                if (prop is not  null) prop.SetValue(app.Config.data, textbox.Text);
             }
 
-            app.Config.SaveConfig(configDict);
+            app.Config.SaveConfig();
             ReinitializeWebView();
         }
 
         private void ReinitializeWebView()
         {
-            var WebView = new WebView();
+            var WebView = new WebView(app);
 
             Application.Current.MainWindow = WebView;
             WebView.Show();

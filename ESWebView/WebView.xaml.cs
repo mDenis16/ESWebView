@@ -23,31 +23,10 @@ namespace ESWebView
     public partial class WebView : Window
     {
         public WinWebViewApp app { get; set; }
-        public ConfigurationWindow configWindow { get; set; }
-      
 
-        public WebView()
+        public WebView(WinWebViewApp _app)
         {
-
-            app = new WinWebViewApp();
-            var StartupResult = app.Startup();
-
-            if (StartupResult == ESWebViewInternal.StartupResult.CLOSE_APPLICATION)
-            {
-                Environment.Exit(0);
-                return;
-            }
-            if (StartupResult == ESWebViewInternal.StartupResult.OPEN_CONFIG_WINDOW)
-            {
-                configWindow = new ConfigurationWindow(app);
-              
-                Application.Current.MainWindow = configWindow;
-                configWindow.Show();
-
-                this.Close();
-            }
-           
-
+            app = _app;
             InitializeComponent();
         }
         private async void Window_Loaded(object sender, RoutedEventArgs e)

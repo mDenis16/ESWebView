@@ -11,6 +11,8 @@ using System.Windows;
 using System.Diagnostics;
 using ESWebViewWin;
 using ESWebViewWin.NativeMethods;
+using ESWebViewInternal.Configuration;
+using ESWebViewInternal.Codes;
 
 namespace ESWebView
 {
@@ -20,7 +22,11 @@ namespace ESWebView
     public partial class App : Application
     {
         WebView webView;
+        ConfigurationWindow configWindow;
+        WinWebViewApp app;
         Mutex mutex;
+      
+
         public void Application_Startup(object sender, StartupEventArgs e)
         {
 
@@ -35,9 +41,24 @@ namespace ESWebView
             else
             {
                 GC.Collect();
-                webView = new WebView();
-                webView.Show();
-                webView.ShowInTaskbar = true;
+                app = new WinWebViewApp();
+
+                var startupResult = app.Startup();
+                if (startupResult == ESWebViewInternal.StartupResult.OPEN_NORMAL)
+                {
+
+                    webView = new WebView(app);
+                    webView.Show();
+                    webView.ShowInTaskbar = true;
+                }
+                else if (startupResult == ESWebViewInternal.StartupResult.OPEN_CONFIG_WINDOW)
+                {
+                    configWindow = new ConfigurationWindow(app);
+                    configWindow.Show();
+                    configWindow.ShowInTaskbar = true;
+                }
+                else
+                    Environment.Exit((int)EXIT_CODES.INVALID_CONFIGURATION);
             }
         }
 
@@ -53,7 +74,6 @@ namespace ESWebView
                 {
                     IntPtr mainWindowHandle = runningProcess.MainWindowHandle;
                     NativeMethods.ShowWindowAsync(mainWindowHandle, 1);
-                  
                 }
             }
         }

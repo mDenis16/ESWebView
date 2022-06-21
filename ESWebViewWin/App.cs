@@ -11,13 +11,15 @@ namespace ESWebViewWin
 
     public class WinWebViewApp : InternalApp
     {
-        public Config Config { get; set; }
+       
         public DataDirectory Directory { get; set; }
         public Mutex mutex;
+        public Config Config { get; set; }
+
         public WinWebViewApp()
         {
             Directory = new DataDirectory("ESData");
-            Config = new Config(Directory, "AppConfig.xml");
+            Config = new Config(Directory, "AppConfig.json");
         }
         public void Shutdown()
         {
@@ -40,13 +42,19 @@ namespace ESWebViewWin
                 return StartupResult.CLOSE_APPLICATION;
             }
 
-            var configResult = Config.VerifyConfiguration();
-            if (configResult.Item1 == ConfigVerifyResult.CREATED_CONFIGURATION || configResult.Item1 == ConfigVerifyResult.INVALID_CONFIGURATION)
+            
+            if (!Config.DoesConfigurationExist())
             {
-                MessageBox.Show(configResult.Item2);
+                MessageBox.Show("Configuration doesn't exist. Please configure it.");
                 return StartupResult.OPEN_CONFIG_WINDOW;
             }
-            
+            var configResult = Config.LoadConfiguration();
+            if (!configResult.Item1)
+            {
+                MessageBox.Show(configResult.Item2);
+                return StartupResult.CLOSE_APPLICATION;
+            }
+
             return StartupResult.OPEN_NORMAL;
         }
         public bool IsAppAlreadyRunning()

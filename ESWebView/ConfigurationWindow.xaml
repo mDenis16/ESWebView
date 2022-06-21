@@ -11,7 +11,7 @@
 
     <DockPanel LastChildFill="False" Margin="5">
         <ScrollViewer Height="370" DockPanel.Dock="Top">
-            <Grid x:Name="GridConfig" ShowGridLines="True" VerticalAlignment="Stretch" Height="400">
+            <Grid x:Name="GridConfig" VerticalAlignment="Stretch" Height="400">
                 <Grid.ColumnDefinitions>
 
                 </Grid.ColumnDefinitions>
