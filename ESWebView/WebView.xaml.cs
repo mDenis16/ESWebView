@@ -23,7 +23,7 @@ namespace ESWebView
     public partial class WebView : Window
     {
         public WinWebViewApp app { get; set; }
-    
+        public ConfigurationWindow configWindow { get; set; }
         public WebView()
         {
             app = new WinWebViewApp();
@@ -42,6 +42,7 @@ namespace ESWebView
         {
             var webview = sender as WebView2;
             webview.CoreWebView2.Navigate(app.GenerateLoadUrl());
+            
         }
 
         private void lblAppVersion_Loaded(object sender, RoutedEventArgs e)

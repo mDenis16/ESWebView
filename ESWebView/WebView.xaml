@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         Title="WebView" Height="450" Width="800" Background="#FFA94646" Loaded="Window_Loaded">
     <DockPanel>
+        
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -31,6 +32,8 @@
             </StatusBarItem>
             <Separator Grid.Column="3" />
         </StatusBar>
+        <ToolBarTray DockPanel.Dock="Top"/>
         <Wpf:WebView2 x:Name="WebViewComponent" Loaded="WebView2_Loaded"/>
+       
     </DockPanel>
 </Window>

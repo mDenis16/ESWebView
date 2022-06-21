@@ -87,6 +87,18 @@ namespace ESWebViewInternal.Configuration
         
             doc.Save(_ConfigPath);
         }
+
+        public void SaveConfig(IDictionary<string, string> data)
+        {
+            var settings = new XElement("Settings");
+            XDocument doc = new XDocument(settings);
+
+            
+            foreach (var prop in data)
+                settings.Add(new XElement(prop.Key, prop.Value));
+
+            doc.Save(_ConfigPath);
+        }
     }
 }
   
