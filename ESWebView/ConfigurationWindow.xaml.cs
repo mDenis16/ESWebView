@@ -35,7 +35,7 @@ namespace ESWebView
             // <TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"><TextBox Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="238"/></TextBlock>
             if (GridConfig is not null)
             {
-                var props = app.Config.data.GetType().GetProperties();
+                var props = app.Config.ReadConfigDict();
 
 
                 var leftCollumn = new ColumnDefinition();
@@ -57,12 +57,12 @@ namespace ESWebView
 
 
                     var TextBlock = new TextBlock();
-                    TextBlock.Text = prop.Name;
+                    TextBlock.Text = prop.Key;
                     TextBlock.SetValue(Grid.RowProperty, GridConfig.RowDefinitions.Count - 1);
                     TextBlock.SetValue(Grid.ColumnProperty, 0);
 
                     var TextBox = new TextBox();
-                    TextBox.Text = (string)prop.GetValue(app.Config.data);
+                    TextBox.Text = prop.Value;
                     TextBox.SetValue(Grid.RowProperty, GridConfig.RowDefinitions.Count - 1);
                     TextBox.SetValue(Grid.ColumnProperty, 1);
 

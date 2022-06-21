@@ -99,6 +99,30 @@ namespace ESWebViewInternal.Configuration
 
             doc.Save(_ConfigPath);
         }
+
+        public IDictionary<string, string> ReadConfigDict()
+        {
+            IDictionary<string, string> configDict = new Dictionary<string, string>();
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(_ConfigPath);
+
+            if (xmlDoc is null) return null;
+            XmlNode? root = xmlDoc.DocumentElement;
+
+            if (root is null) return null;
+
+            XmlNode? settings = root.SelectSingleNode("/Settings");
+
+            if (settings is null) return null;
+
+            foreach (var prop in typeof(XmlConfig).GetProperties())
+            {
+                XmlNode? propNode = settings.SelectSingleNode(prop.Name);
+                configDict[propNode.Name] = propNode.InnerText;
+            }
+            return configDict;
+        }
     }
 }
   

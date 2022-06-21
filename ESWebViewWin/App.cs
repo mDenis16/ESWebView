@@ -13,7 +13,7 @@ namespace ESWebViewWin
     {
         public Config Config { get; set; }
         public DataDirectory Directory { get; set; }
-
+        public Mutex mutex;
         public WinWebViewApp()
         {
             Directory = new DataDirectory("ESData");
@@ -26,6 +26,13 @@ namespace ESWebViewWin
 
         public StartupResult Startup()
         {
+            if (IsAppAlreadyRunning())
+            {
+                MessageBox.Show("An instance of this app is already running.");
+                return StartupResult.CLOSE_APPLICATION;
+            }
+
+
             var directoryResult = Directory.CheckIfDirectoryExists();
             if (!directoryResult.Item1)
             {
@@ -38,12 +45,6 @@ namespace ESWebViewWin
             {
                 MessageBox.Show(configResult.Item2);
                 return StartupResult.OPEN_CONFIG_WINDOW;
-            }
-
-            if (IsAppAlreadyRunning())
-            {
-                MessageBox.Show("An instance of this app is already running.");
-                return StartupResult.CLOSE_APPLICATION;
             }
             
             return StartupResult.OPEN_NORMAL;
@@ -58,7 +59,7 @@ namespace ESWebViewWin
             string userId = System.Security.Principal.WindowsIdentity.GetCurrent().User.Value;
             string appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             TimeZone localZone = TimeZone.CurrentTimeZone;
-            return Config.data.baseURL + $"/userId={userId}&version={appVersion}&tz={localZone.ToString()}";
+            return Config.data.baseURL + $"/userId={userId}&version={appVersion}&tz='{localZone.StandardName}'";
         }
     }
 }

@@ -24,8 +24,11 @@ namespace ESWebView
     {
         public WinWebViewApp app { get; set; }
         public ConfigurationWindow configWindow { get; set; }
+      
+
         public WebView()
         {
+
             app = new WinWebViewApp();
             var StartupResult = app.Startup();
 
