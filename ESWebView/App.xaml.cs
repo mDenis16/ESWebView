@@ -22,7 +22,7 @@ namespace ESWebView
     public partial class App : Application
     {
         WebView webView;
-        ConfigurationWindow configWindow;
+        ConfigurationWebWindow configWindow;
         WinWebViewApp app;
         Mutex mutex;
       
@@ -43,7 +43,7 @@ namespace ESWebView
                 GC.Collect();
                 app = new WinWebViewApp();
 
-                var startupResult = app.Startup();
+                /*var startupResult = app.Startup();
                 if (startupResult == ESWebViewInternal.StartupResult.OPEN_NORMAL)
                 {
 
@@ -58,7 +58,10 @@ namespace ESWebView
                     configWindow.ShowInTaskbar = true;
                 }
                 else
-                    Environment.Exit((int)EXIT_CODES.INVALID_CONFIGURATION);
+                    Environment.Exit((int)EXIT_CODES.INVALID_CONFIGURATION);*/
+                configWindow = new ConfigurationWebWindow(app);
+                configWindow.Show();
+                configWindow.ShowInTaskbar = true;
             }
         }
 

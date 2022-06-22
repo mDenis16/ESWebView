@@ -7,33 +7,55 @@
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Class="ESWebView.WebView"
         mc:Ignorable="d"
         Title="WebView" Height="450" Width="800" Background="#FFA94646" Loaded="Window_Loaded">
+    <Window.CommandBindings>
+        <CommandBinding Command="New" CanExecute="CommonCommandBinding_CanExecute" />
+        <CommandBinding Command="Open" CanExecute="CommonCommandBinding_CanExecute" />
+        <CommandBinding Command="Save" CanExecute="CommonCommandBinding_CanExecute" />
+    </Window.CommandBindings>
+    
     <DockPanel>
-        
-        <StatusBar DockPanel.Dock="Bottom">
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Command="New" Content="About" />
+                <Button Command="Open" Content="Help" />
+                <Button Command="Save" Content="Configuration" />
+            </ToolBar>
+           
+        </ToolBarTray>
+      
+
+    <StatusBar DockPanel.Dock="Bottom">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="100" />
+                           
+                            <ColumnDefinition MinWidth="150" Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="30*"/>
+                            <ColumnDefinition Width="30*"/>
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            <StatusBarItem>
-                <TextBlock Name="lblAppVersion" Loaded="lblAppVersion_Loaded" />
+            <StatusBarItem Grid.Column="0">
+                <TextBlock Name="lblCurrentTime" HorizontalAlignment="Stretch" Text="Time 5:55AM +3 GMT" Loaded="lblAppVersion_Loaded" />
+            </StatusBarItem>
+            <Separator Grid.Column="1" HorizontalAlignment="Center" Margin="2,4,2,4" />
+            
+            <StatusBarItem Grid.Column="2">
+                <TextBlock  Name="lblUsernamaes" HorizontalAlignment="Stretch" Text="User: Denis"  Loaded="lblUsername_Loaded" />
             </StatusBarItem>
            
-            <StatusBarItem Grid.Column="2">
-                <TextBlock  Name="lblUsername" Loaded="lblUsername_Loaded" />
-            </StatusBarItem>
-            <Separator Grid.Column="3" />
+          
         </StatusBar>
-        <ToolBarTray DockPanel.Dock="Top"/>
-        <Wpf:WebView2 x:Name="WebViewComponent" Loaded="WebView2_Loaded"/>
        
+       
+        <Wpf:WebView2 x:Name="WebViewComponent" Loaded="WebView2_Loaded"/>
+        
+
     </DockPanel>
 </Window>

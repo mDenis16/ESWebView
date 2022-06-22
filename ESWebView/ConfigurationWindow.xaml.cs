@@ -119,6 +119,11 @@ namespace ESWebView
 
             this.Close();
         }
+
+        public static implicit operator ConfigurationWindow(ConfigurationWebWindow v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
