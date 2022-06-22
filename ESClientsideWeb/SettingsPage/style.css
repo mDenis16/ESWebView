@@ -98,7 +98,9 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: hsl(237, 17%, 21%);
+    border: 1px solid rgba(0, 0, 0, 0.247);
+    box-shadow: inset 0px 0px 21px -5px rgba(0, 0, 0, 0.1);
     -webkit-transition: .4s;
     transition: .4s;
 }
@@ -106,8 +108,8 @@ body {
 .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
+    height: 14px;
+    width: 14px;
     left: 4px;
     bottom: 4px;
     background-color: white;
@@ -116,7 +118,8 @@ body {
 }
 
 input:checked+.slider {
-    background-color: #b1b2d6;
+    background-color: hsl(237, 17%, 51%);
+
 }
 
 input:focus+.slider {
@@ -157,8 +160,11 @@ input:checked+.slider:before {
     padding-left: 10px;
     padding-right: 10px;
     display: flex;
+    background: hsl(237, 17%, 21%);
     justify-content: center;
     align-items: center;
+    color: white;
+    border: 1px solid rgba(0, 0, 0, 0.247);
     box-shadow: inset 0px 0px 21px -5px rgba(0, 0, 0, 0.1);
     height: 90%;
 }

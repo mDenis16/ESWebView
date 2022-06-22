@@ -11,8 +11,4 @@
     <PackageReference Include="NodaTime" Version="3.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Configuration\Attributes\" />
-  </ItemGroup>
-
 </Project>

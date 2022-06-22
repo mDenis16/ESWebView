@@ -21,20 +21,19 @@ function getTemplateByType(type) {
     switch (type) {
         case 'bool':
             return optionTemplates.checkbox;
-        case 'text':
+        case 'string':
             return optionTemplates.textinput;
     }
     return undefined;
 }
 function fillTemplatebyType(setting) {
     var template = getTemplateByType(setting.type);
-
-    var tempTemplate = template.replace('{OPTION_NAME}', setting.name);
+    var tempTemplate = template.replace('{OPTION_NAME}', setting.displayName);
 
     if (tempTemplate) {
         if (setting.type == 'bool')
             tempTemplate = tempTemplate.replace('{OPTION_VALUE}', setting.value ? 'checked' : '');
-        else if (setting.type == 'text') {
+        else if (setting.type == 'string') {
             tempTemplate = tempTemplate.replace('{OPTION_VALUE}', setting.value);
 
 
@@ -49,19 +48,21 @@ function fillTemplatebyType(setting) {
     return tempTemplate;
 }
 function populateSettings(settings) {
+    settings = JSON.parse(settings);
 
     var settingsParrent = document.getElementsByClassName('toggle_options')[0];
-
+    
     if (!settingsParrent) return;
 
     settings.forEach(setting => {
-
+        
         var template = fillTemplatebyType(setting);
+    
         if (!template) return;
 
         let doc = document.createElement('div');
         doc.className = 'option';
-        console.log('created doc ' + template);
+       
         doc.innerHTML = template;
         settingsParrent.appendChild(doc);
         setting.ref = doc;
@@ -81,7 +82,7 @@ function saveCommand() {
 
 
 
-        if (setting.type == 'text')
+        if (setting.type == 'string')
             setting.value = option.children[1].children[0].value;
         else if (setting.type == 'bool') {
             setting.value = option.children[1].children[0].children[0].checked;
@@ -94,7 +95,7 @@ function saveCommand() {
 
     console.log('currentSettings ' + json);
 
-    window.chrome.webview.postMessage(json);
+    window.chrome.webview.postMessage({Type: 0, PayLoad: json});
 }
 
 document.addEventListener('click', function (ev) {
@@ -103,11 +104,8 @@ document.addEventListener('click', function (ev) {
         var res = currentPopulatedSettings.find(p => p.propertyName == ev.target.getAttribute('propertyName'));
 
         if (res) {
-           res.value = !res.value;
-          console.log('modified  res ' + res);
+            res.value = !res.value;
         }
-
-        console.log('asds');
     }
 });
 
