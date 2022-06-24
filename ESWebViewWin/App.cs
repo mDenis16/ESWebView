@@ -6,6 +6,8 @@ using static ESWebViewInternal.Configuration.Config;
 using System.Diagnostics;
 using System.Security.Principal;
 using ESWebViewInternal.Configuration.Attributes;
+using ESWebViewInternal.Bridge;
+using Newtonsoft.Json;
 
 namespace ESWebViewWin
 {
@@ -65,6 +67,9 @@ namespace ESWebViewWin
                 MessageBox.Show(configResult.Item2);
                 return StartupResult.CLOSE_APPLICATION;
             }
+            
+            SetInternalConfigData();
+
 
             return StartupResult.OPEN_NORMAL;
         }
@@ -80,7 +85,41 @@ namespace ESWebViewWin
             System.TimeSpan zoneOffset = hereAndNow.ToDateTimeOffset().Offset;
 
             return "UTC" + (zoneOffset < TimeSpan.Zero ? "-" : "+") + zoneOffset;
-        }        
+        }
+
+        public void WebMessageReceived(WebMessage webMessage)
+        {
+            if (webMessage.Type == MessageType.SAVE_SETTINGS)
+            {
+                var settingsObj = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(webMessage.PayLoad);
+                if (settingsObj is null) return;
+
+                var configProps = typeof(ConfigData).GetProperties();
+
+                if (configProps is null) return;
+
+                foreach (var setting in settingsObj)
+                {
+                    string? propertyName = setting["propertyName"] as string;
+                    string? type = setting["type"] as string;
+                    object? value = setting["value"];
+
+                    if (value is null || type is null || propertyName is null) return;
+
+                    PropertyInfo? prop = configProps.FirstOrDefault(a => a.Name == propertyName);
+
+                    if (prop is null) continue;
+
+                    if (type == "bool")
+                        prop.SetValue(Config.data, bool.Parse(value as string));
+                    else if (type == "string")
+                        prop.SetValue(Config.data, value as string);
+                }
+
+                Config.SaveConfig();
+            }
+        }
+
         public string BuidLoadUrl()
         {
 
