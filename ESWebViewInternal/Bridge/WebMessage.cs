@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESWebView.Bridge
+namespace ESWebViewInternal.Bridge
 {
     public enum MessageType {
         SAVE_SETTINGS

@@ -19,5 +19,13 @@ namespace ESWebViewInternal
 
         public DataDirectory Directory { get; set; }
 
+        public Version Version { get; set; }
+
+        public string BuidLoadUrl();
+
+        public void PlayNativeSound(string location);
+
+
+
     }
 }

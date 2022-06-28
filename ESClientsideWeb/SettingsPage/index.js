@@ -3,7 +3,7 @@ var optionTemplates = {
     <div class="name">{OPTION_NAME}</div>
     <div class="input">
         <label class="switch">
-            <input class="input__checkbox" type="checkbox" propertyName={PROPERTY_NAME} {OPTION_VALUE}>
+            <input accessType='{OPTION_ACCESSTYPE}' class="input__checkbox" displayName='{OPTION_NAME}' type="checkbox" propertyName={PROPERTY_NAME} {OPTION_VALUE}>
             <span class="slider round"></span>
         </label>
     </div>
@@ -11,7 +11,7 @@ var optionTemplates = {
     textinput: `
 <div class="name">{OPTION_NAME}</div>
 <div class="input">
-    <input type="text" class="input__text" name="{OPTION_NAME}" propertyName={PROPERTY_NAME} value="{OPTION_VALUE}" placeholder="{OPTION_PLACEHOLDER}" >
+    <input accessType='{OPTION_ACCESSTYPE}' type="text" class="input__text" displayName='{OPTION_NAME}' name="{OPTION_NAME}" propertyName={PROPERTY_NAME} value="{OPTION_VALUE}" placeholder="{OPTION_PLACEHOLDER}" {OPTION_URLITEM} {OPTION_DISABLED} >
 </div>
 `
 }
@@ -19,7 +19,7 @@ var currentPopulatedSettings = [];
 
 function getTemplateByType(type) {
     switch (type) {
-        case 'bool':
+        case 'boolean':
             return optionTemplates.checkbox;
         case 'string':
             return optionTemplates.textinput;
@@ -27,42 +27,59 @@ function getTemplateByType(type) {
     return undefined;
 }
 function fillTemplatebyType(setting) {
+
     var template = getTemplateByType(setting.type);
-    var tempTemplate = template.replace('{OPTION_NAME}', setting.displayName);
+    var tempTemplate = template.replaceAll('{OPTION_NAME}', setting.displayName);
 
     if (tempTemplate) {
-        if (setting.type == 'bool')
-            tempTemplate = tempTemplate.replace('{OPTION_VALUE}', setting.value ? 'checked' : '');
+        if (setting.type == 'boolean')
+            tempTemplate = tempTemplate.replaceAll('{OPTION_VALUE}', setting.value ? 'checked' : '');
         else if (setting.type == 'string') {
-            tempTemplate = tempTemplate.replace('{OPTION_VALUE}', setting.value);
+            tempTemplate = tempTemplate.replaceAll('{OPTION_VALUE}', setting.value);
 
 
             if (setting.value_placeholder)
-                tempTemplate = tempTemplate.replace('{OPTION_PLACEHOLDER}', setting.value_placeholder);
+                tempTemplate = tempTemplate.replaceAll('{OPTION_PLACEHOLDER}', setting.value_placeholder);
             else
-                tempTemplate = tempTemplate.replace('{OPTION_PLACEHOLDER}', '');
+                tempTemplate = tempTemplate.replaceAll('{OPTION_PLACEHOLDER}', '');
         }
-        tempTemplate = tempTemplate.replace('{PROPERTY_NAME}', setting.propertyName);
+        tempTemplate = tempTemplate.replaceAll('{PROPERTY_NAME}', setting.propertyName);
+
+        if (setting.accessType & 2)
+            tempTemplate = tempTemplate.replaceAll('{OPTION_DISABLED}', 'disabled');
+
+        tempTemplate = tempTemplate.replace('{OPTION_ACCESSTYPE}', setting.accessType);
+
     }
 
     return tempTemplate;
 }
+var escapeJSON = function (str) {
+    return str.replace('//', '\\');
+};
 function populateSettings(settings) {
-    settings = JSON.parse(settings);
 
+    try {
+        settings = JSON.parse(`${settings.replaceAll('\\', '\\\\')}`)
+    }
+    catch (ex) {
+        console.warn(ex);
+    }
     var settingsParrent = document.getElementsByClassName('toggle_options')[0];
-    
+
     if (!settingsParrent) return;
 
-    settings.forEach(setting => {
-        
-        var template = fillTemplatebyType(setting);
+    settingsParrent.innerHTML = '';
     
+    settings.forEach(setting => {
+
+        var template = fillTemplatebyType(setting);
+
         if (!template) return;
 
         let doc = document.createElement('div');
         doc.className = 'option';
-       
+
         doc.innerHTML = template;
         settingsParrent.appendChild(doc);
         setting.ref = doc;
@@ -84,7 +101,7 @@ function saveCommand() {
 
         if (setting.type == 'string')
             setting.value = option.children[1].children[0].value;
-        else if (setting.type == 'bool') {
+        else if (setting.type == 'boolean') {
             setting.value = option.children[1].children[0].children[0].checked;
             console.log('checked ' + option.children[1].children[0].children[0].checked);
         }
@@ -95,7 +112,7 @@ function saveCommand() {
 
     console.log('currentSettings ' + json);
 
-    window.chrome.webview.postMessage({Type: 0, PayLoad: json});
+    window.chrome.webview.postMessage({ Type: 0, PayLoad: json });
 }
 
 document.addEventListener('click', function (ev) {
@@ -109,3 +126,48 @@ document.addEventListener('click', function (ev) {
     }
 });
 
+document.addEventListener('focusin', (ev) => {
+
+    if (ev.target && ev.target.classList.contains('input__text') && ev.target.hasAttribute('propertyName')) {
+
+        if (ev.target.getAttribute('propertyName') == 'loadURL') {
+
+            var options = document.getElementsByClassName('toggle_options')[0];
+            if (!options) return;
+            var disabled_list = document.querySelectorAll('[accessType]');
+            if (!disabled_list) return;
+
+
+            disabled_list.forEach(el => {
+                if (!(parseInt(el.getAttribute("accessType")) & 4)) return;
+
+                el.setAttribute('oldValue', el.value);
+
+                el.value = `{${el.getAttribute('propertyName')}}`
+            })
+
+        }
+    }
+});
+document.addEventListener('focusout', (ev) => {
+
+    if (ev.target && ev.target.classList.contains('input__text') && ev.target.hasAttribute('propertyName')) {
+
+        if (ev.target.getAttribute('propertyName') == 'loadURL') {
+
+            var options = document.getElementsByClassName('toggle_options')[0];
+            if (!options) return;
+            var disabled_list = document.querySelectorAll('[accessType]');
+            if (!disabled_list) return;
+
+
+
+
+            disabled_list.forEach(el => {
+                if (parseInt(el.getAttribute('accessType')) & 4)
+                    el.value = el.getAttribute("oldValue");
+            })
+
+        }
+    }
+});

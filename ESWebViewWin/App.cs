@@ -8,7 +8,7 @@ using System.Security.Principal;
 using ESWebViewInternal.Configuration.Attributes;
 using ESWebViewInternal.Bridge;
 using Newtonsoft.Json;
-
+using System.Media;
 namespace ESWebViewWin
 {
     
@@ -19,7 +19,7 @@ namespace ESWebViewWin
         public DataDirectory Directory { get; set; }
         public Mutex mutex;
         public Config Config { get; set; }
-
+        public Version Version { get; set; }
 
         public WinWebViewApp()
         {
@@ -58,6 +58,7 @@ namespace ESWebViewWin
             
             if (!Config.DoesConfigurationExist())
             {
+                SetInternalConfigData();
                 MessageBox.Show("Configuration doesn't exist. Please configure it.");
                 return StartupResult.OPEN_CONFIG_WINDOW;
             }
@@ -120,8 +121,7 @@ namespace ESWebViewWin
             }
         }
 
-        public string BuidLoadUrl()
-        {
+        public string BuidLoadUrl()        {
 
             string userId = System.Security.Principal.WindowsIdentity.GetCurrent().User.Value;
             string appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -133,8 +133,16 @@ namespace ESWebViewWin
             foreach (var prop in props)
                 loadURL = loadURL.Replace("{" + prop.Name + "}", prop.GetValue(Config.data).ToString());
 
-            string url = $@"$baseurl?userid=$userid&version=$appversion&tz=$currenttimezone";
+
             return loadURL;
+        }
+
+        public void PlayNativeSound(string path)
+        {
+            SoundPlayer player = new SoundPlayer();
+            player.SoundLocation = path;
+            player.Load();
+            player.Play();
         }
     }
 }

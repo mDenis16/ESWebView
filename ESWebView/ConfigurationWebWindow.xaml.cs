@@ -15,9 +15,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using ESWebView.Bridge;
+using ESWebViewInternal.Bridge;
 using ESWebViewInternal.Configuration;
 using System.Reflection;
+using System.Diagnostics;
+using System.IO;
 
 namespace ESWebView
 {
@@ -32,14 +34,16 @@ namespace ESWebView
             app = _app;
             InitializeComponent();
         }
+
+
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             WebViewComponent.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
             WebViewComponent.WebMessageReceived += CoreWebView2WebMessageReceivedEventArgs;
-          
+
             await WebViewComponent.EnsureCoreWebView2Async(null);
 
-           
+
         }
         private void WebView_CoreWebView2InitializationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
         {
@@ -53,48 +57,13 @@ namespace ESWebView
         {
             var jsonConfig = app.Config.GetConfigWebComp();
 
-            WebViewComponent.CoreWebView2.ExecuteScriptAsync("setInterval(() =>{console.log('mata'); populateSettings(${jsonConfig})},500);");
+            WebViewComponent.CoreWebView2.ExecuteScriptAsync($"populateSettings(`{jsonConfig}`)");
         }
 
         private void CoreWebView2WebMessageReceivedEventArgs(object sender, CoreWebView2WebMessageReceivedEventArgs ev)
         {
             WebMessage? WebMessage = JsonConvert.DeserializeObject<WebMessage>(ev.WebMessageAsJson); if (WebMessage is null) return;
-            //[{"propertyName":"folderPath","name":"Folder path","type":"text","value":"localhost","ref":null},{"propertyName":"autoStart","name":"Autostart","type":"bool","value":false,"ref":null}]
-            if (WebMessage.Type == MessageType.SAVE_SETTINGS)
-            {
-                var settingsObj = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(WebMessage.PayLoad);
-                if (settingsObj is null) return;
-
-                var configProps = typeof(ConfigData).GetProperties();
-
-                if (configProps is null) return;
-
-                foreach(var setting in settingsObj)
-                {
-                    string? propertyName = setting["propertyName"] as string;
-                    string? type = setting["type"] as string;
-                    object? value = setting["value"];
-
-                    if (value is null || type is null  || propertyName is null) return;
-
-                    PropertyInfo? prop = configProps.FirstOrDefault(a => a.Name == propertyName);
-
-                    if (prop is null) continue;
-
-                    if (type == "bool")
-                        prop.SetValue(app.Config.data, bool.Parse(value as string));
-                    else if (type == "string")
-                        prop.SetValue(app.Config.data, value as string);
-                }
-
-                app.Config.SaveConfig();
-            }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var jsonConfig = app.Config.GetConfigWebComp();
-            WebViewComponent.CoreWebView2.ExecuteScriptAsync($"populateSettings('{jsonConfig}')");
+            app.WebMessageReceived(WebMessage);
         }
     }
 }

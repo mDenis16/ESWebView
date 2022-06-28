@@ -7,7 +7,7 @@
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Class="ESWebView.ConfigurationWebWindow"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="ConfigurationWebWindow" Height="450" Width="800">
+        Title="ConfigurationWebWindow" Height="550" Width="800">
     <Grid>
 
         <Wpf:WebView2 x:Name="WebViewComponent"/>

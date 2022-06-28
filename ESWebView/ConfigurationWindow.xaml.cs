@@ -112,12 +112,7 @@ namespace ESWebView
 
         private void ReinitializeWebView()
         {
-            var WebView = new WebView(app);
-
-            Application.Current.MainWindow = WebView;
-            WebView.Show();
-
-            this.Close();
+           
         }
 
         public static implicit operator ConfigurationWindow(ConfigurationWebWindow v)

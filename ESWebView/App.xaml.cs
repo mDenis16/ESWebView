@@ -13,6 +13,7 @@ using ESWebViewWin;
 using ESWebViewWin.NativeMethods;
 using ESWebViewInternal.Configuration;
 using ESWebViewInternal.Codes;
+using System.IO;
 
 namespace ESWebView
 {
@@ -22,7 +23,6 @@ namespace ESWebView
     public partial class App : Application
     {
         WebView webView;
-        ConfigurationWebWindow configWindow;
         WinWebViewApp app;
         Mutex mutex;
       
@@ -43,29 +43,22 @@ namespace ESWebView
                 GC.Collect();
                 app = new WinWebViewApp();
 
-                /*var startupResult = app.Startup();
-                if (startupResult == ESWebViewInternal.StartupResult.OPEN_NORMAL)
+                var startupResult = app.Startup();
+                
+                if (startupResult == ESWebViewInternal.StartupResult.OPEN_NORMAL || startupResult == ESWebViewInternal.StartupResult.OPEN_CONFIG_WINDOW)
                 {
 
-                    webView = new WebView(app);
+                    webView = new WebView(app, startupResult);
                     webView.Show();
                     webView.ShowInTaskbar = true;
                 }
-                else if (startupResult == ESWebViewInternal.StartupResult.OPEN_CONFIG_WINDOW)
-                {
-                    configWindow = new ConfigurationWindow(app);
-                    configWindow.Show();
-                    configWindow.ShowInTaskbar = true;
-                }
                 else
-                    Environment.Exit((int)EXIT_CODES.INVALID_CONFIGURATION);*/
-                configWindow = new ConfigurationWebWindow(app);
-                configWindow.Show();
-                configWindow.ShowInTaskbar = true;
+                    Environment.Exit((int)EXIT_CODES.INVALID_CONFIGURATION);
+              
             }
         }
 
-
+       
 
         private static void BringOldInstanceToFront(string processName)
         {

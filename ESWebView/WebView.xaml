@@ -6,19 +6,17 @@
         xmlns:local="clr-namespace:ESWebView"
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Class="ESWebView.WebView"
         mc:Ignorable="d"
-        Title="WebView" Height="450" Width="800" Background="#FFA94646" Loaded="Window_Loaded">
-    <Window.CommandBindings>
-        <CommandBinding Command="New" CanExecute="CommonCommandBinding_CanExecute" />
-        <CommandBinding Command="Open" CanExecute="CommonCommandBinding_CanExecute" />
-        <CommandBinding Command="Save" CanExecute="CommonCommandBinding_CanExecute" />
-    </Window.CommandBindings>
-    
+        Title="WebView" Height="600" Width="800" Background="White" Loaded="Window_Loaded">
+   
+
     <DockPanel>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <Button Command="New" Content="About" />
-                <Button Command="Open" Content="Help" />
-                <Button Command="Save" Content="Configuration" />
+
+                <Button Click="View_Click">Home</Button>
+                <Button Click="Configuraton_Click">Configuration</Button>
+                <Button Click="Help_Click">Help</Button>
+                <Button Click="About_Click">About</Button>
             </ToolBar>
            
         </ToolBarTray>
@@ -47,14 +45,14 @@
             <Separator Grid.Column="1" HorizontalAlignment="Center" Margin="2,4,2,4" />
             
             <StatusBarItem Grid.Column="2">
-                <TextBlock  Name="lblUsernamaes" HorizontalAlignment="Stretch" Text="User: Denis"  Loaded="lblUsername_Loaded" />
+                <TextBlock  Name="lblUsername" HorizontalAlignment="Stretch" Text="User: Denis"  Loaded="lblUsername_Loaded" />
             </StatusBarItem>
            
           
         </StatusBar>
-       
-       
-        <Wpf:WebView2 x:Name="WebViewComponent" Loaded="WebView2_Loaded"/>
+
+
+        <Wpf:WebView2 x:Name="WebViewComponent" Loaded="WebView_Loaded"/>
         
 
     </DockPanel>
